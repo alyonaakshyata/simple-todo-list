@@ -36,7 +36,7 @@ CREATE TABLE Tasks (
     Description NVARCHAR(255) NOT NULL,
     IsCompleted BIT NOT NULL DEFAULT 0
 );
-
+```
 ### 2. Install .NET Packages
 
 Install the required SQL client package to interact with the SQL Server:
@@ -48,7 +48,7 @@ dotnet add package System.Data.SqlClient
 
 Clone or download the project repository to your local machine.
 
-```bash
+```
 git clone https://github.com/yourusername/todoapp.git
 cd todoapp
 
