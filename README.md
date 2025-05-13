@@ -1,4 +1,4 @@
-# 📝 C# Console To-Do List App
+# 📝 To-Do List App (C# + SQL)
 
 A simple C# console application that allows users to add and view to-do tasks. This project is ideal for beginners learning the basics of C#, console input/output, and program structure. A future version may connect to a SQL database for persistent storage.
 
