@@ -1,78 +1,76 @@
 using System;
-using System.Collections.Generic;
+using System.Data.SqlClient;
 
-namespace TodoApp
+class TodoApp
 {
-    class Program
+    static string connectionString = "Server=localhost;Database=TodoAppDB;Trusted_Connection=True;";
+
+    static void Main(string[] args)
     {
-        // In-memory task list
-        static List<string> tasks = new List<string>();
-
-        static void Main(string[] args)
+        while (true)
         {
-            Console.WriteLine("=== C# Console To-Do List App ===");
-
-            while (true)
+            Console.Clear();
+            Console.WriteLine("Todo List App");
+            Console.WriteLine("1. Add Task");
+            Console.WriteLine("2. View Tasks");
+            Console.WriteLine("3. Exit");
+            Console.Write("Choose an option: ");
+            
+            string choice = Console.ReadLine();
+            
+            switch (choice)
             {
-                ShowMenu();
+                case "1":
+                    AddTask();
+                    break;
+                case "2":
+                    ViewTasks();
+                    break;
+                case "3":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice, try again.");
+                    break;
+            }
+        }
+    }
 
-                Console.Write("Choose an option (1-3): ");
-                string input = Console.ReadLine();
+    static void AddTask()
+    {
+        Console.Write("Enter task description: ");
+        string description = Console.ReadLine();
 
-                switch (input)
+        using (SqlConnection conn = new SqlConnection(connectionString))
+        {
+            conn.Open();
+            string query = "INSERT INTO Tasks (Description) VALUES (@Description)";
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Description", description);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        
+        Console.WriteLine("Task added successfully!");
+        Console.ReadKey();
+    }
+
+    static void ViewTasks()
+    {
+        using (SqlConnection conn = new SqlConnection(connectionString))
+        {
+            conn.Open();
+            string query = "SELECT Id, Description, IsCompleted FROM Tasks";
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
                 {
-                    case "1":
-                        AddTask();
-                        break;
-                    case "2":
-                        ViewTasks();
-                        break;
-                    case "3":
-                        Console.WriteLine("Exiting... Goodbye!");
-                        return;
-                    default:
-                        Console.WriteLine("Invalid input. Please choose 1, 2, or 3.");
-                        break;
+                    Console.WriteLine($"ID: {reader["Id"]}, Description: {reader["Description"]}, Completed: {reader["IsCompleted"]}");
                 }
             }
         }
-
-        static void ShowMenu()
-        {
-            Console.WriteLine("\nMenu:");
-            Console.WriteLine("1 - Add a Task");
-            Console.WriteLine("2 - View All Tasks");
-            Console.WriteLine("3 - Exit");
-        }
-
-        static void AddTask()
-        {
-            Console.Write("Enter the task description: ");
-            string task = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(task))
-            {
-                tasks.Add(task);
-                Console.WriteLine("Task added successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Task description cannot be empty.");
-            }
-        }
-
-        static void ViewTasks()
-        {
-            if (tasks.Count == 0)
-            {
-                Console.WriteLine("No tasks found.");
-                return;
-            }
-
-            Console.WriteLine("Your Tasks:");
-            for (int i = 0; i < tasks.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {tasks[i]}");
-            }
-        }
+        
+        Console.ReadKey();
     }
 }
